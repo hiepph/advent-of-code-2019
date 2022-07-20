@@ -5,8 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5ea072dc-0b9c-4898-a4ba-c96d605fc77e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/Day3.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/inputs/3.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/tests/3.1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/tests/3.2.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/day2/Day2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/day2/Day2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/day1/Day1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Day1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/day2/Day2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Day2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/test/1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/tests/1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/test/2.2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/tests/2.2.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/test/2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/tests/2.1.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,13 +52,25 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.Day2">
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Day3">
+    <configuration name="Day1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Day1" />
+      <module name="advent-of-code-2019.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Day2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="day2.Day2" />
+      <option name="MAIN_CLASS_NAME" value="Day2" />
       <module name="advent-of-code-2019.main" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="day2.*" />
+          <option name="PATTERN" value=".*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -58,8 +78,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="day1.Day1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="day1.Day1" />
+    <configuration name="Day3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Day3" />
       <module name="advent-of-code-2019.main" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -67,6 +87,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Day3" />
         <item itemvalue="Application.Day2" />
         <item itemvalue="Application.day1.Day1" />
       </list>
@@ -96,6 +117,13 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Day3.java</url>
+          <line>143</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog>
           <selected-grouping-rules>
