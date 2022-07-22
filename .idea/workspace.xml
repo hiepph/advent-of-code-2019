@@ -5,16 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5ea072dc-0b9c-4898-a4ba-c96d605fc77e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/Day3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/inputs/3.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/tests/3.1.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/tests/3.2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/Day4.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/Day4Test.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/day1/Day1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Day1.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/day2/Day2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Day2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/test/1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/tests/1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/test/2.2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/tests/2.2.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/test/2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/tests/2.1.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +18,16 @@
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view />
+      </state>
+    </system>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -57,14 +60,7 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Day3">
-    <configuration name="Day1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Day1" />
-      <module name="advent-of-code-2019.main" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.Day4">
     <configuration name="Day2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Day2" />
       <module name="advent-of-code-2019.main" />
@@ -85,11 +81,66 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Day4" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Day4" />
+      <module name="advent-of-code-2019.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Day4Test.testInputs (1)" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;Day4Test.testInputs&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="Day4Test.testPart2" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;Day4Test.testPart2&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.Day4Test.testPart2" />
+        <item itemvalue="Gradle.Day4Test.testInputs (1)" />
+        <item itemvalue="Application.Day4" />
         <item itemvalue="Application.Day3" />
         <item itemvalue="Application.Day2" />
-        <item itemvalue="Application.day1.Day1" />
       </list>
     </recent_temporary>
   </component>
@@ -132,5 +183,8 @@
         </breakpoints-dialog>
       </breakpoints-dialog>
     </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/advent_of_code_2019$Day4.ic" NAME="Day4 Coverage Results" MODIFIED="1658501026490" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>
