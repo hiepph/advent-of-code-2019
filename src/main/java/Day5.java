@@ -11,7 +11,7 @@ public class Day5 {
                 Paths.get("src/main/resources/inputs/5.txt")
         );
 
-        System.out.println(part1(lines.get(0)));
+//        System.out.println(part1(lines.get(0)));
         System.out.println(part2(lines.get(0)));
     }
 
@@ -173,14 +173,14 @@ class Instruction2 {
                 if (firstParameter() != 0) {
                     instructionPointer = secondParameter();
                 } else {
-                    instructionPointer += 4;
+                    instructionPointer += 3;
                 }
                 break;
             case 6:
                 if (firstParameter() == 0) {
                     instructionPointer = secondParameter();
                 } else {
-                    instructionPointer += 4;
+                    instructionPointer += 3;
                 }
                 break;
             case 7:
