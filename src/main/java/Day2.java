@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Day2 {
-    private static List<Integer> readInts(String line) {
+    public static List<Integer> readInts(String line) {
         List<Integer> nums = new ArrayList<Integer>();
 
         for (String numString : line.split(",")) {
