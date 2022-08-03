@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5ea072dc-0b9c-4898-a4ba-c96d605fc77e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/Day6.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/inputs/6.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/tests/6.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Day5.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Day5.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,14 +61,7 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Day5">
-    <configuration name="Day3" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Day3" />
-      <module name="advent-of-code-2019.main" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.Day6">
     <configuration name="Day4" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Day4" />
       <module name="advent-of-code-2019.main" />
@@ -76,6 +71,13 @@
     </configuration>
     <configuration name="Day5" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Day5" />
+      <module name="advent-of-code-2019.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Day6" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Day6" />
       <module name="advent-of-code-2019.main" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -129,11 +131,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Day6" />
         <item itemvalue="Application.Day5" />
         <item itemvalue="Gradle.Day4Test.testPart2" />
         <item itemvalue="Gradle.Day4Test.testInputs (1)" />
         <item itemvalue="Application.Day4" />
-        <item itemvalue="Application.Day3" />
       </list>
     </recent_temporary>
   </component>
@@ -171,6 +173,11 @@
           <url>file://$PROJECT_DIR$/src/main/java/Day5.java</url>
           <line>71</line>
           <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Day6.java</url>
+          <line>16</line>
+          <option name="timeStamp" value="25" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
