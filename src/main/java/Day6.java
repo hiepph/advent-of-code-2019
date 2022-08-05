@@ -18,7 +18,6 @@ public class Day6 {
 
         // part 2
         // BFS
-        g = makeGraph(lines);
         System.out.println("part 2: " + g.getShortestDistance("YOU", "SAN"));
     }
 
