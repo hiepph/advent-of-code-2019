@@ -11,14 +11,16 @@ import static java.lang.Integer.MIN_VALUE;
 
 public class Day7 {
     public static void main(String[] args) throws IOException {
-        List<String> lines = Files.readAllLines(
-                Paths.get("src/main/resources/inputs/7.txt")
-        );
-
-        System.out.println(part1(readInts(lines.get(0))));
+        System.out.println(part1("src/main/resources/inputs/7.txt"));
+//        System.out.println(part2(readInts(lines.get(0))));
     }
 
-    private static int part1(List<Integer> inputs) {
+    public static int part1(String inputFilename) throws IOException {
+        List<String> lines = Files.readAllLines(
+                Paths.get(inputFilename)
+        );
+        List<Integer> inputs = readInts(lines.get(0));
+
         int maxThrusterSignal = MIN_VALUE;
         List<Integer> sequence = IntStream.range(0, 5).boxed().collect(Collectors.toList());
         Set<List<Integer>> permutations = generatePermutations(sequence);
@@ -26,7 +28,24 @@ public class Day7 {
         for (List<Integer> phaseSettingSequence : permutations) {
             Series series = new Series(phaseSettingSequence);
 
-            int thrusterSignal = series.execute(inputs);
+            int thrusterSignal = series.execute(inputs, false);
+            if (thrusterSignal > maxThrusterSignal) {
+                maxThrusterSignal = thrusterSignal;
+            }
+        }
+
+        return maxThrusterSignal;
+    }
+
+    private static int part2(List<Integer> inputs) {
+        int maxThrusterSignal = MIN_VALUE;
+        List<Integer> sequence = IntStream.range(5, 10).boxed().collect(Collectors.toList());
+        Set<List<Integer>> permutations = generatePermutations(sequence);
+
+        for (List<Integer> phaseSettingSequence : permutations) {
+            Series series = new Series(phaseSettingSequence);
+
+            int thrusterSignal = series.execute(inputs, true);
             if (thrusterSignal > maxThrusterSignal) {
                 maxThrusterSignal = thrusterSignal;
             }
@@ -81,9 +100,13 @@ class Series {
 
     /**
      * Returns the thruster signal as the final output signal after a series of amplifiers.
+     *
+     * Feedback loop is enabled: If an amplifier meets an opcode 4 to output a signal, it will
+     * continue from this position in the next loop.
      */
-    public int execute(List<Integer> inputs) {
+    public int execute(List<Integer> inputs, boolean feedbackLoopEnabled) {
         int outputSignal = 0;
+
         for (int phaseSetting : phaseSettingSequence) {
             Amplifier amp = new Amplifier(new ArrayList<>(inputs), Arrays.asList(phaseSetting, outputSignal));
 
@@ -140,9 +163,10 @@ class Amplifier {
                 break;
             case 4:
                 // output
+                // also stops after sending the output signal
                 diagnosticCode = inputs.get(inputs.get(instructionPointer + 1));
                 instructionPointer += 2;
-                break;
+                return;
             case 5:
                 if (firstParameter() != 0) {
                     instructionPointer = secondParameter();
