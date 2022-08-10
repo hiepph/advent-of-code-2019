@@ -8,11 +8,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.Integer.MIN_VALUE;
+import static java.lang.Integer.max;
 
 public class Day7 {
     public static void main(String[] args) throws IOException {
         System.out.println(part1("src/main/resources/inputs/7.txt"));
-//        System.out.println(part2(readInts(lines.get(0))));
+        System.out.println(part2("src/main/resources/inputs/7.txt"));
     }
 
     public static int part1(String inputFilename) throws IOException {
@@ -37,7 +38,12 @@ public class Day7 {
         return maxThrusterSignal;
     }
 
-    private static int part2(List<Integer> inputs) {
+    public static int part2(String inputFilename) throws IOException {
+        List<String> lines = Files.readAllLines(
+                Paths.get(inputFilename)
+        );
+        List<Integer> inputs = readInts(lines.get(0));
+
         int maxThrusterSignal = MIN_VALUE;
         List<Integer> sequence = IntStream.range(5, 10).boxed().collect(Collectors.toList());
         Set<List<Integer>> permutations = generatePermutations(sequence);
@@ -93,34 +99,51 @@ public class Day7 {
 
 class Series {
     private final List<Integer> phaseSettingSequence;
+    private int thrusterSignal;
 
-    Series(List<Integer> phaseSettingSequence ) {
+    Series(List<Integer> phaseSettingSequence) {
         this.phaseSettingSequence = phaseSettingSequence;
+        this.thrusterSignal = -1;
     }
 
     /**
      * Returns the thruster signal as the final output signal after a series of amplifiers.
      *
      * Feedback loop is enabled: If an amplifier meets an opcode 4 to output a signal, it will
-     * continue from this position in the next loop.
+     * continue from this position in the next loop. The loop will halt if any of the amplifiers halts.
      */
     public int execute(List<Integer> inputs, boolean feedbackLoopEnabled) {
         int outputSignal = 0;
 
-        for (int phaseSetting : phaseSettingSequence) {
-            Amplifier amp = new Amplifier(new ArrayList<>(inputs), Arrays.asList(phaseSetting, outputSignal));
-
-            try {
-                amp.execute();
-            } catch (NoOpCodeException err) {
-                System.out.println(err.getMessage());
-                return -1;
-            }
-
-            outputSignal = amp.getDiagnosticCode();
+        // Amplifiers have memories
+        List<Amplifier> amplifiers = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            amplifiers.add(new Amplifier(new ArrayList<>(inputs), phaseSettingSequence.get(i)));
         }
 
-        return outputSignal;
+        while (true) {
+            for (int i = 0; i < 5; i++) {
+                Amplifier amplifier = amplifiers.get(i);
+
+                try {
+                    amplifier.execute(outputSignal);
+                } catch (NoOpCodeException err) {
+                    System.out.println(err.getMessage());
+                    return -1;
+                }
+
+                outputSignal = amplifier.getDiagnosticCode();
+                if (amplifier.isHalted()) {
+                    return thrusterSignal;
+                }
+            }
+
+            // thrusterSignal is considered only as the last output signal from amplifier E
+            thrusterSignal = outputSignal;
+            if (!feedbackLoopEnabled) break;
+        }
+
+        return thrusterSignal;
     }
 }
 
@@ -128,20 +151,24 @@ class Amplifier {
     private final List<Integer> inputs;
     private int instructionPointer;
     private String instr;
-    private final List<Integer> inputCodes;
-    private int inputCodePointer;
+    private List<Integer> inputCodes;
+    private final int phaseSetting;
+    private boolean acceptPhaseSetting;
     private int diagnosticCode;
+    private boolean isHalted;
 
 
-    public Amplifier(List<Integer> inputs, List<Integer> inputCodes) {
+    public Amplifier(List<Integer> inputs, int phaseSetting) {
         this.inputs = inputs;
         this.instructionPointer = 0;
 
-        this.inputCodes = inputCodes;
-        this.inputCodePointer = 0;
+        this.acceptPhaseSetting = true;
+        this.phaseSetting = phaseSetting;
+
+        this.isHalted = false;
     }
 
-    public void execute() throws NoOpCodeException {
+    public void execute(int inputCode) throws NoOpCodeException {
         this.instr = String.format("%05d", inputs.get(instructionPointer));
         int opCode = Integer.parseInt(this.instr.substring(3));
         switch (opCode) {
@@ -157,13 +184,17 @@ class Amplifier {
                 break;
             case 3:
                 // input
-                inputs.set(inputs.get(instructionPointer + 1), inputCodes.get(inputCodePointer));
-                inputCodePointer++;
+                if (acceptPhaseSetting) {
+                    inputs.set(inputs.get(instructionPointer + 1), phaseSetting);
+                    acceptPhaseSetting = false;
+                } else {
+                    inputs.set(inputs.get(instructionPointer + 1), inputCode);
+                }
                 instructionPointer += 2;
                 break;
             case 4:
                 // output
-                // also stops after sending the output signal
+                // also pauses immediately after sending the output signal
                 diagnosticCode = inputs.get(inputs.get(instructionPointer + 1));
                 instructionPointer += 2;
                 return;
@@ -192,12 +223,13 @@ class Amplifier {
                 instructionPointer += 4;
                 break;
             case 99:
+                isHalted = true;
                 return;
             default:
                 throw new NoOpCodeException(opCode);
         }
 
-        execute();
+        execute(inputCode);
     }
 
     private int firstParameter() {
@@ -214,6 +246,10 @@ class Amplifier {
 
     public int getDiagnosticCode() {
         return diagnosticCode;
+    }
+
+    public boolean isHalted() {
+        return isHalted;
     }
 }
 
