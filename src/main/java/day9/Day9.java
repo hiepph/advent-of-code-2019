@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Day9 {
@@ -59,12 +60,18 @@ class IntCodeComputer {
     private final List<Long> memory;
     private long instructionPointer;
     private String instr;
-    private List<Long> inputCodes;
     private long diagnosticCode;
+    private long relativeBase;
 
     public IntCodeComputer(List<Long> inputs) {
-        this.memory = inputs;
+        this.memory = new ArrayList<>(Collections.nCopies(9999, 0L));
+        for (int i = 0; i < inputs.size(); i++) {
+            this.memory.set(i, inputs.get(i));
+        }
+
+        this.diagnosticCode = 0;
         this.instructionPointer = 0;
+        this.relativeBase = 0;
     }
 
     public void execute(int inputCode) throws day9.NoOpCodeException {
@@ -87,7 +94,7 @@ class IntCodeComputer {
                 break;
             case 4:
                 diagnosticCode = getParameter(1);
-                instructionPointer += 2;
+                System.out.println(diagnosticCode);
                 break;
             case 5:
                 if (getParameter(1) != 0) {
@@ -113,6 +120,10 @@ class IntCodeComputer {
                         getParameter(1) == getParameter(2) ? 1 : 0);
                 instructionPointer += 4;
                 break;
+            case 9:
+                relativeBase += getParameter(1);
+                instructionPointer += 2;
+                break;
             case 99:
                 return;
             default:
@@ -126,17 +137,17 @@ class IntCodeComputer {
         int index = 3 - ordinal;
         char mode = instr.charAt(index);
 
-        switch (mode) {
-            case '0':
-                return getMemory(getMemory(instructionPointer + ordinal));
-            case '1':
-                return getMemory(instructionPointer + ordinal);
-//            case '2':
-            default:
-                return -1;
-        }
+        return switch (mode) {
+            case '0' -> getMemory(getMemory(instructionPointer + ordinal));
+            case '1' -> getMemory(instructionPointer + ordinal);
+            case '2' -> getMemory(relativeBase + getMemory(instructionPointer + 1));
+            default -> -1;
+        };
     }
 
+    /*
+     * Invalid to try to access the memory at a negative address.
+     */
     private long getMemory(long address) {
         return memory.get((int) address);
     }
