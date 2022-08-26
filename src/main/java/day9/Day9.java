@@ -94,7 +94,7 @@ class IntCodeComputer {
                 break;
             case 4:
                 diagnosticCode = getParameter(1);
-                System.out.println(diagnosticCode);
+                instructionPointer += 2;
                 break;
             case 5:
                 if (getParameter(1) != 0) {
