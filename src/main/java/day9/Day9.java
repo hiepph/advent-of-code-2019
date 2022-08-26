@@ -21,7 +21,7 @@ public class Day9 {
         IntCodeComputer computer = new IntCodeComputer(inputs);
         try {
             computer.execute(inputCode);
-        } catch (NoOpCodeException err) {
+        } catch (NoOpCodeException | NoModeException err) {
             System.out.println(err.getMessage());
             return -1;
         }
@@ -74,7 +74,7 @@ class IntCodeComputer {
         this.relativeBase = 0;
     }
 
-    public void execute(int inputCode) throws day9.NoOpCodeException {
+    public void execute(int inputCode) throws day9.NoOpCodeException, day9.NoModeException {
         instr = String.format("%05d", getMemory(instructionPointer));
         int opCode = (int) Long.parseLong(instr.substring(3));
         switch (opCode) {
@@ -133,15 +133,13 @@ class IntCodeComputer {
         execute(inputCode);
     }
 
-    private long getParameter(int ordinal) {
-        int index = 3 - ordinal;
-        char mode = instr.charAt(index);
-
+    private long getParameter(int ordinal) throws NoModeException {
+        char mode = instr.charAt(3 - ordinal);
         return switch (mode) {
             case '0' -> getMemory(getMemory(instructionPointer + ordinal));
             case '1' -> getMemory(instructionPointer + ordinal);
-            case '2' -> getMemory(relativeBase + getMemory(instructionPointer + 1));
-            default -> -1;
+            case '2' -> getMemory(relativeBase + getMemory(instructionPointer + ordinal));
+            default -> throw new NoModeException(mode);
         };
     }
 
@@ -164,5 +162,11 @@ class IntCodeComputer {
 class NoOpCodeException extends Exception {
     public NoOpCodeException(int opCode) {
         super(String.format("No such opcode: %d", opCode));
+    }
+}
+
+class NoModeException extends Exception {
+    public NoModeException(int mode) {
+        super(String.format("No such mode: %d", mode));
     }
 }
