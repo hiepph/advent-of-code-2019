@@ -9,10 +9,13 @@ import java.util.List;
 
 public class Day9 {
     public static void main(String[] args) throws IOException {
-        System.out.println(part1("src/main/resources/inputs/9.txt", 1));
+        // part 1
+//        System.out.println(run("src/main/resources/inputs/9.txt", 1));
+        // part 2
+        System.out.println(run("src/main/resources/inputs/9.txt", 2));
     }
 
-    public static long part1(String inputFilename, int inputCode) throws IOException {
+    public static long run(String inputFilename, int inputCode) throws IOException {
         List<String> lines = Files.readAllLines(
                 Paths.get(inputFilename)
         );
@@ -20,7 +23,9 @@ public class Day9 {
 
         IntCodeComputer computer = new IntCodeComputer(inputs);
         try {
-            computer.execute(inputCode);
+            while (!computer.isHalted()) {
+                computer.execute(inputCode);
+            }
         } catch (NoOpCodeException | NoModeException err) {
             System.out.println(err.getMessage());
             return -1;
@@ -46,6 +51,7 @@ class IntCodeComputer {
     private String instr;
     private long diagnosticCode;
     private long relativeBase;
+    private boolean isHalted;
 
     public IntCodeComputer(List<Long> inputs) {
         this.memory = new ArrayList<>(Collections.nCopies(9999, 0L));
@@ -56,6 +62,7 @@ class IntCodeComputer {
         this.diagnosticCode = 0;
         this.instructionPointer = 0;
         this.relativeBase = 0;
+        this.isHalted = false;
     }
 
     /*
@@ -116,12 +123,11 @@ class IntCodeComputer {
                 instructionPointer += 2;
                 break;
             case 99:
+                isHalted = true;
                 return;
             default:
                 throw new NoOpCodeException(opCode);
         }
-
-        execute(inputCode);
     }
 
 
@@ -162,6 +168,10 @@ class IntCodeComputer {
 
     public long getDiagnosticCode() {
         return diagnosticCode;
+    }
+
+    public boolean isHalted() {
+        return isHalted;
     }
 }
 

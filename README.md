@@ -1,6 +1,6 @@
 # Advent of Code 2019  (*TBD*)
 
-This year is entertaining since I get to build a [computer](https://adventofcode.com/2019/day/2) that interprets integer codes.
+This year is entertaining since I get to build a [computer](https://adventofcode.com/2019/day/9) that interprets integer codes.
 Kudos to the people who involved to make it educational.
 
 I use Java for this year with OOP style to encapsulate layers of abstractions and functionalities. It fits perfectly.
@@ -14,3 +14,21 @@ I had to refactor and add unit tests since the latter challenges require the pre
 + I keep getting this annoying `203` diagnostic code error:
   - Refer: [reddit](https://www.reddit.com/r/adventofcode/comments/e8aw9j/2019_day_9_part_1_how_to_fix_203_error/).
   - Parameters that an instruction writes to will *never be in immediate mode*.
+
++ `StackOverflow` error:
+  + Switched to iterative mode instead of recursion mode:
+
+```java
+// bad 
+computer.execute(inputCode);
+
+void execute() { 
+    // ...
+    execute();
+}
+
+// fixed
+while (!computer.isHalted()) {
+  computer.execute(inputCode);
+}
+```
