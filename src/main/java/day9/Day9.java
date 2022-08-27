@@ -10,7 +10,7 @@ import java.util.List;
 public class Day9 {
     public static void main(String[] args) throws IOException {
         // part 1
-//        System.out.println(run("src/main/resources/inputs/9.txt", 1));
+        System.out.println(run("src/main/resources/inputs/9.txt", 1));
         // part 2
         System.out.println(run("src/main/resources/inputs/9.txt", 2));
     }
