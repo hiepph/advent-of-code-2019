@@ -40,22 +40,6 @@ public class Day9 {
     }
 }
 
-/*
- * Instruction has the form: ABCDE, in which:
- *   + DE: 2-digit opcode
- *   + C: mode of first parameter
- *   + B: mode of second parameter
- *   + A: mode of third parameter
- *
- * Types of mode:
- *   + 0: position mode
- *   + 1: immediate mode
- *   + 2: relative mode
- *
- * ref:
- *   + https://adventofcode.com/2019/day/2
- *   + https://adventofcode.com/2019/day/5
- */
 class IntCodeComputer {
     private final List<Long> memory;
     private long instructionPointer;
@@ -74,22 +58,31 @@ class IntCodeComputer {
         this.relativeBase = 0;
     }
 
+    /*
+     * Instruction has the form: ABCDE, in which:
+     *   + DE: 2-digit opcode
+     *   + C: mode of first parameter
+     *   + B: mode of second parameter
+     *   + A: mode of third parameter
+     *
+     * ref:
+     *   + https://adventofcode.com/2019/day/2
+     *   + https://adventofcode.com/2019/day/5
+     */
     public void execute(int inputCode) throws day9.NoOpCodeException, day9.NoModeException {
         instr = String.format("%05d", getMemory(instructionPointer));
         int opCode = (int) Long.parseLong(instr.substring(3));
         switch (opCode) {
             case 1:
-                setMemory(getMemory(instructionPointer + 3),
-                        getParameter(1) + getParameter(2));
+                setMemory(3, getParameter(1) + getParameter(2));
                 instructionPointer += 4;
                 break;
             case 2:
-                setMemory(getMemory(instructionPointer + 3),
-                        getParameter(1) * getParameter(2));
+                setMemory(3, getParameter(1) * getParameter(2));
                 instructionPointer += 4;
                 break;
             case 3:
-                setMemory(getMemory(instructionPointer + 1), inputCode);
+                setMemory(1, inputCode);
                 instructionPointer += 2;
                 break;
             case 4:
@@ -111,13 +104,11 @@ class IntCodeComputer {
                 }
                 break;
             case 7:
-                setMemory(getMemory(instructionPointer + 3),
-                        getParameter(1) < getParameter(2) ? 1 : 0);
+                setMemory(3, getParameter(1) < getParameter(2) ? 1 : 0);
                 instructionPointer += 4;
                 break;
             case 8:
-                setMemory(getMemory(instructionPointer + 3),
-                        getParameter(1) == getParameter(2) ? 1 : 0);
+                setMemory(3, getParameter(1) == getParameter(2) ? 1 : 0);
                 instructionPointer += 4;
                 break;
             case 9:
@@ -133,8 +124,16 @@ class IntCodeComputer {
         execute(inputCode);
     }
 
+
     private long getParameter(int ordinal) throws NoModeException {
         char mode = instr.charAt(3 - ordinal);
+
+        /*
+         * Types of mode:
+         *   + 0: position mode
+         *   + 1: immediate mode
+         *   + 2: relative mode
+         */
         return switch (mode) {
             case '0' -> getMemory(getMemory(instructionPointer + ordinal));
             case '1' -> getMemory(instructionPointer + ordinal);
@@ -150,8 +149,11 @@ class IntCodeComputer {
         return memory.get((int) address);
     }
 
-    private void setMemory(long index, long value) {
-        memory.set((int) index, value);
+    /*
+     * Parameters that an instruction writes to will *always be in position mode*
+     */
+    private void setMemory(int ordinal, long value) {
+        memory.set((int)  getMemory(instructionPointer + ordinal), value);
     }
 
     public long getDiagnosticCode() {
