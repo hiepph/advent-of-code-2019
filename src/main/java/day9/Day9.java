@@ -125,15 +125,14 @@ class IntCodeComputer {
     }
 
 
+    /*
+     * Types of mode:
+     *   + 0: position mode
+     *   + 1: immediate mode
+     *   + 2: relative mode
+     */
     private long getParameter(int ordinal) throws NoModeException {
         char mode = instr.charAt(3 - ordinal);
-
-        /*
-         * Types of mode:
-         *   + 0: position mode
-         *   + 1: immediate mode
-         *   + 2: relative mode
-         */
         return switch (mode) {
             case '0' -> getMemory(getMemory(instructionPointer + ordinal));
             case '1' -> getMemory(instructionPointer + ordinal);
@@ -150,10 +149,15 @@ class IntCodeComputer {
     }
 
     /*
-     * Parameters that an instruction writes to will *always be in position mode*
+     * Parameters that an instruction writes to will *never be in immediate mode*
      */
-    private void setMemory(int ordinal, long value) {
-        memory.set((int)  getMemory(instructionPointer + ordinal), value);
+    private void setMemory(int ordinal, long value) throws NoModeException {
+        char mode = instr.charAt(3 - ordinal);
+        switch (mode) {
+            case '0', '1' -> memory.set((int) getMemory(instructionPointer + ordinal), value);
+            case '2' -> memory.set((int) (relativeBase + getMemory(instructionPointer + ordinal)), value);
+            default -> throw new NoModeException(mode);
+        }
     }
 
     public long getDiagnosticCode() {
