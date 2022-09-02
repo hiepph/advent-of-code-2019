@@ -1,2 +1,4 @@
-package day10;public class Tuple {
+package day10;
+
+public record Tuple<F, S>(F first, S second) {
 }
