@@ -31,17 +31,8 @@ public class Day10 {
                 Paths.get(inputFilename)
         );
 
-        // calculate a list of points
-        //
-        // -> sorted hashmap (by angle)
-        //          angle: <sorted set> (by distance)
-        //
-        // while len(hash map) > 0
-        //  loop sorted angles
-        //    - remove the nearest point from set
-        //    - if angle set is empty -> remove angle
         List<Point> points = getAllPoints(lines, source);
-        SortedMap<Float, SortedSet<Point>> asteroids = buildStrategy(points);
+        SortedMap<Float, List<Point>> asteroids = arrangePoints(points);
         return vaporise(asteroids);
     }
 
@@ -93,8 +84,9 @@ public class Day10 {
 
         for (int y = 0; y < lines.size(); y++) {
             for (int x = 0; x < lines.get(y).length(); x++) {
-                if (lines.get(y).charAt(x) == '#')
-                    points.add(new Point(x - source.first(), y - source.second()));
+                if (lines.get(y).charAt(x) == '#' &&
+                        !(x == source.first() && y == source.second()))
+                    points.add(new Point(x, y, source));
             }
         }
 
@@ -104,37 +96,80 @@ public class Day10 {
     // Build strategy for vaporising the asteroids.
     // Create a sorted hash map with:
     //   + Keys are angles, sorted incrementally
-    //   + Values are sorted set, elements are points which are sorted by distance incrementally
-    private static SortedMap<Float, SortedSet<Point>> buildStrategy(List<Point> points) {
-        SortedMap<Float, SortedSet<Point>> asteroids = new TreeMap<>();
+    //   + Values are sorted list, elements are points which are sorted by distance incrementally
+    private static SortedMap<Float, List<Point>> arrangePoints(List<Point> points) {
+        SortedMap<Float, List<Point>> asteroids = new TreeMap<>();
 
         for (Point point : points) {
-            SortedSet<Point> set = asteroids.getOrDefault(point.getAngle(), new TreeSet<>());
-            set.add(point);
+            List<Point> list = asteroids.getOrDefault(point.getAngle(), new ArrayList<>());
+            list.add(point);
 
-            asteroids.put(point.getAngle(), set);
+            asteroids.put(point.getAngle(), list);
+        }
+
+        for (List<Point> list : asteroids.values()) {
+            Collections.sort(list);
         }
 
         return asteroids;
     }
 
+    private static List<Tuple<Integer, Integer>> vaporise(SortedMap<Float, List<Point>> asteroids) {
+        List<Tuple<Integer, Integer>> result = new ArrayList<>();
+        int level = 0;
+        boolean halt = true;
+        while (true) {
+            for (List<Point> list : asteroids.values()) {
+                if (list.size() > level) {
+                    halt = false; // there is still a level to go
+                    Point nearestPoint = list.get(level);
+                    result.add(new Tuple<>(nearestPoint.getX(), nearestPoint.getY()));
+                }
+            }
+
+            level++;
+            if (halt)
+                break;
+
+            halt = true;
+        }
+
+        return result;
+    }
 }
 
 class Point implements Comparable<Point> {
-    private float angle; // in radian
-    private long distance;
+    private int x;
+    private int y;
 
-    Point(int relative_x, int relative_y) {
+    private float angle; // in radian
+    private int distance;
+
+    Point(int x, int y, Tuple<Integer, Integer> source) {
+        this.x = x;
+        this.y = y;
+
+        int relative_x = x - source.first();
+        int relative_y = source.second() - y;
+
         // we're moving clockwise, hence calculate the angle using atan2(x, y)
         angle = (float) Math.atan2(relative_x, relative_y);
         // map angle to 0..2PI instead of -PI..PI
         angle = (angle >= 0) ? angle : (float) (2 * Math.PI + angle);
 
-        distance = relative_y * relative_y + relative_x * relative_x;
+        distance =  relative_y * relative_y + relative_x * relative_x;
     }
 
     public float getAngle() {
         return angle;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     @Override

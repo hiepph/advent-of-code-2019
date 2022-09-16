@@ -26,11 +26,15 @@ public class Day10Test {
         location = Day10.part1("src/main/resources/tests/10.4.txt").first();
         List<Tuple<Integer, Integer>> asteroids = Day10.part2("src/main/resources/tests/10.4.txt", location);
         assertEquals(new Tuple<>(11, 12), asteroids.get(0));
-//        assertEquals(new Tuple<>(12, 1), Day10.part2("src/main/resources/tests/10.4.txt", 2));
-//        assertEquals(new Tuple<>(12, 2), Day10.part2("src/main/resources/tests/10.4.txt", 3));
-//        assertEquals(new Tuple<>(9, 6), Day10.part2("src/main/resources/tests/10.4.txt", 199));
-//        assertEquals(new Tuple<>(8, 2), Day10.part2("src/main/resources/tests/10.4.txt", 200));
-//        assertEquals(new Tuple<>(10, 9), Day10.part2("src/main/resources/tests/10.4.txt", 201));
-//        assertEquals(new Tuple<>(11, 1), Day10.part2("src/main/resources/tests/10.4.txt", 299));
+        assertEquals(new Tuple<>(12, 1), asteroids.get(1));
+        assertEquals(new Tuple<>(12, 2), asteroids.get(2));
+        assertEquals(new Tuple<>(12, 8), asteroids.get(9));
+        assertEquals(new Tuple<>(16, 0), asteroids.get(19));
+        assertEquals(new Tuple<>(16, 9), asteroids.get(49));
+        assertEquals(new Tuple<>(10, 16), asteroids.get(99));
+        assertEquals(new Tuple<>(9, 6), asteroids.get(198));
+        assertEquals(new Tuple<>(8, 2), asteroids.get(199));
+        assertEquals(new Tuple<>(10, 9), asteroids.get(200));
+        assertEquals(new Tuple<>(11, 1), asteroids.get(298));
     }
 }
