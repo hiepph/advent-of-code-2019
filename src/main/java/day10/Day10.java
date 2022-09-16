@@ -11,7 +11,12 @@ import java.util.Set;
 public class Day10 {
     public static void main(String[] args) throws IOException {
         // part 1
-        System.out.println(part1("src/main/resources/inputs/10.txt").second());
+        Tuple<Tuple<Integer, Integer>, Integer> result1 = part1("src/main/resources/inputs/10.txt");
+        System.out.println(result1.second());
+
+        // part 2
+        List<Tuple<Integer, Integer>> asteroids = part2("src/main/resources/inputs/10.txt", result1.first());
+        System.out.println(asteroids.get(199).first() * 100 + asteroids.get(199).second());
     }
 
     public static Tuple<Tuple<Integer, Integer>, Integer> part1(String inputFilename) throws IOException {
@@ -20,6 +25,15 @@ public class Day10 {
         );
         List<Tuple<Integer, Integer>> coordinates = getAllCoordinates(lines);
         return calculateBestLocation(coordinates);
+    }
+
+    public static List<Tuple<Integer, Integer>> part2(
+            String inputFilename,
+            Tuple<Integer, Integer> location) throws IOException {
+        List<String> lines = Files.readAllLines(
+                Paths.get(inputFilename)
+        );
+
     }
 
     private static List<Tuple<Integer, Integer>> getAllCoordinates(List<String> lines) {
