@@ -7,10 +7,14 @@ import java.util.*;
 
 public class Day11 {
     public static void main(String[] args) throws IOException {
-        System.out.println(part1("src/main/resources/inputs/11.txt"));
+        // start with black
+        System.out.println(run("src/main/resources/inputs/11.txt", 0));
+
+        // start with white
+        System.out.println(run("src/main/resources/inputs/11.txt", 1));
     }
 
-    public static long part1(String inputFilename) throws IOException {
+    public static long run(String inputFilename, int inputCode) throws IOException {
         List<String> lines = Files.readAllLines(
                 Paths.get(inputFilename)
         );
@@ -18,8 +22,6 @@ public class Day11 {
 
         Robot robot = new Robot();
         Map<Point, Integer> map = new HashMap<>();
-        // starts with black
-        int inputCode = 0;
 
         IntCodeComputer computer = new IntCodeComputer(inputs);
         try {
@@ -27,7 +29,6 @@ public class Day11 {
                 int colour = (int) computer.execute(inputCode);
                 int direction  = (int) computer.execute(inputCode);
 
-                robot.paint(colour);
                 map.put(robot.getPosition(), colour);
                 robot.move(direction);
 
@@ -38,7 +39,46 @@ public class Day11 {
             return -1;
         }
 
+        // draw the map with colours
+        drawMap(map);
+
         return map.size();
+    }
+
+    // Map:
+    //                |
+    //   (x0, y0) #############
+    //      #         |       #
+    // -----#--------(0, 0) --#------ x (+)
+    //      #         |       #
+    //      #         |       #
+    //      ############### (x1, y1)
+    //                |
+    //                y (+)
+    private static void drawMap(Map<Point, Integer> map) {
+        int x0, y0, x1, y1;
+        x0 = y0 = x1 = y1 = 0;
+
+        for (Point point : map.keySet()) {
+            if (point.x() < x0) x0 = point.x();
+            if (point.y() < y0) y0 = point.y();
+            if (point.x() > x1) x1 = point.x();
+            if (point.y() > y1) y1 = point.y();
+        }
+
+        for (int c = y0; c <= y1; c++) {
+            for (int r = x0; r <= x1; r++) {
+                Point point = new Point(r, c);
+                if (map.getOrDefault(point, 0) == 1) {
+                    System.out.print("#");
+                }
+                else {
+                    System.out.print(" ");
+                }
+            }
+
+            System.out.print("\n");
+        }
     }
 
     private static List<Long> readNumbers(String line) {
@@ -66,8 +106,6 @@ class Robot {
         // start with face ^
         face = UP;
     }
-
-    public void paint(int colour) { }
 
     public void move(int direction) {
         if (direction == 0) {
