@@ -16,7 +16,17 @@ public class Experiment {
     }
 
     public void simulate() {
+        for (int i = 0; i < moons.length; i++) {
+            for (int j = 0; j < moons.length; j++)  {
+                if (j != i) {
+                    moons[i].applyGravity(moons[j]);
+                }
+            }
+        }
 
+        for (int i = 0; i < moons.length; i++) {
+            moons[i].applyVelocity();
+        }
     }
 
     public Moon[] getMoons() {
@@ -36,7 +46,7 @@ public class Experiment {
             System.exit(1);
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < moons.length; i++) {
             // Match 3 positive/negative numbers.
             // Sample line:
             // <x=-1, y=0, z=2>
@@ -49,7 +59,7 @@ public class Experiment {
                 nums[j] = Integer.parseInt(m.group(1));
             }
 
-            moons[i] = new Moon(new Tuple(nums[0], nums[1], nums[2]));
+            moons[i] = new Moon(new int[]{nums[0], nums[1], nums[2]});
         }
 
         return moons;
