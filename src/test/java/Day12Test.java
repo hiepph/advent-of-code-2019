@@ -44,5 +44,7 @@ public class Day12Test {
                 new Moon(new int[]{3, -6, 1}, new int[]{3, 2, -3}),
                 new Moon(new int[]{2, 0, 4}, new int[]{1, -1, -1}),
         }, experiment.getMoons());
+
+        assertEquals(179, experiment.getTotalEnergy());
     }
 }

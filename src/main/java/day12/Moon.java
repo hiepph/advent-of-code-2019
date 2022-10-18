@@ -34,6 +34,26 @@ public class Moon {
         }
     }
 
+    public int getPotentialEnergy() {
+        int energy = 0;
+        for (int i = 0; i < 3; i++) {
+            energy += Math.abs(position[i]);
+        }
+        return energy;
+    }
+
+    public int getKineticEnergy() {
+        int energy = 0;
+        for (int i = 0; i < 3; i++) {
+            energy += Math.abs(velocity[i]);
+        }
+        return energy;
+    }
+
+    public int getTotalEnergy() {
+        return getKineticEnergy() * getPotentialEnergy();
+    }
+
     @Override
     public String toString() {
         return String.format("[x=%d, y=%d, z=%d], [vx=%d, vy=%d, vz=%d]",

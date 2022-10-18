@@ -33,6 +33,14 @@ public class Experiment {
         return moons;
     }
 
+    public int getTotalEnergy() {
+        int energy = 0;
+        for (int i = 0; i < moons.length; i++) {
+            energy += moons[i] .getTotalEnergy();
+        }
+        return energy;
+    }
+
     private Moon[] readMoons(String inputFileName) {
         moons = new Moon[4];
 
