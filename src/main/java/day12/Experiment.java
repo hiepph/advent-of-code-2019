@@ -15,6 +15,7 @@ public class Experiment {
         this.moons = readMoons(inputFileName);
     }
 
+    // simulate for all coordinates
     public void simulate() {
         for (int i = 0; i < moons.length; i++) {
             for (int j = 0; j < moons.length; j++)  {
@@ -39,6 +40,15 @@ public class Experiment {
             energy += moons[i] .getTotalEnergy();
         }
         return energy;
+    }
+
+    public boolean equalsState(Moon[] others, int axis) {
+        for (int i = 0; i < moons.length; i++) {
+            if (moons[i].getPosition()[axis] != others[i].getPosition()[axis]) return false;
+            if (moons[i].getVelocity()[axis] != others[i].getVelocity()[axis]) return false;
+        }
+
+        return true;
     }
 
     private Moon[] readMoons(String inputFileName) {

@@ -1,10 +1,8 @@
 package day12;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Objects;
 
-public class Moon {
+public class Moon implements Cloneable {
     private int[] position;
     private int[] velocity;
 
@@ -52,6 +50,31 @@ public class Moon {
 
     public int getTotalEnergy() {
         return getKineticEnergy() * getPotentialEnergy();
+    }
+
+    public int[] getPosition() {
+        return position;
+    }
+
+    public int[] getVelocity() {
+        return velocity;
+    }
+
+    public void setPosition(int[] position) {
+        this.position = position;
+    }
+
+    public void setVelocity(int[] velocity) {
+        this.velocity = velocity;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Object obj = super.clone();
+        Moon moon = (Moon) obj;
+        moon.setPosition(moon.getPosition().clone());
+        moon.setVelocity(moon.getVelocity().clone());
+        return moon;
     }
 
     @Override

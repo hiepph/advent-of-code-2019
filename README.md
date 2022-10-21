@@ -32,3 +32,11 @@ while (!computer.isHalted()) {
   computer.execute(inputCode);
 }
 ```
+
+# Day 12
+
+x, y, and z coordinates are independent of each other -> find the cycles in each of three axis. 
+The answer is the least common multiple (LCM) of three cycles.
+
++ Reference:
+  + https://0xdf.gitlab.io/adventofcode2019/12

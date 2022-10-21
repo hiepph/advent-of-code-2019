@@ -2,6 +2,7 @@ import day12.Experiment;
 import day12.Moon;
 import org.junit.jupiter.api.Test;
 
+import static day12.Day12.part2;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class Day12Test {
@@ -46,5 +47,10 @@ public class Day12Test {
         }, experiment.getMoons());
 
         assertEquals(179, experiment.getTotalEnergy());
+    }
+
+    @Test
+    void testPart2() {
+        assertEquals(2772, part2("src/main/resources/tests/12.1.txt"));
     }
 }
