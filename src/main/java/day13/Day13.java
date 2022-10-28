@@ -8,10 +8,12 @@ import java.util.stream.Collectors;
 
 public class Day13 {
     public static void main(String[] args) throws IOException {
-        System.out.println(run("src/main/resources/inputs/13.txt"));
+        System.out.println(part1("src/main/resources/inputs/13.txt"));
+        System.out.println(part2("src/main/resources/inputs/13.txt"));
     }
 
-    private static long run(String inputFilename) throws IOException {
+    // Returns the number of block tiles on the screen
+    private static long part1(String inputFilename) throws IOException {
         List<String> lines = Files.readAllLines(
                 Paths.get(inputFilename)
         );
@@ -37,6 +39,46 @@ public class Day13 {
                 .collect(Collectors.groupingBy(map::get))
                 .get(Tile.Block)
                 .size();
+    }
+
+    // Returns the  score after beating all blocks.
+    private static long part2(String inputFilename) throws IOException {
+        List<String> lines = Files.readAllLines(
+                Paths.get(inputFilename)
+        );
+        List<Long> data = readNumbers(lines.get(0));
+
+        IntCodeComputer computer = new IntCodeComputer(data);
+        var map = makeMap(data, computer);
+
+        // play
+        // set memory address
+        // set stream of joystick input (by comparing the ball position to the next block position)
+        // recompute each time input is set
+        // refer: https://github.com/berkgulmus/AdventOfCode2019/blob/master/Day13.2.py
+        // refer: https://www.reddit.com/r/adventofcode/comments/e9zgse/2019_day_13_solutions/
+
+        return 0;
+    }
+
+    public static Map<Point, Tile> makeMap(List<Long> data, IntCodeComputer computer) {
+        Map<Point, Tile> map = new HashMap<>();
+
+        int inputCode = 0;
+        try {
+            while (!computer.isHalted()) {
+                int x = (int) computer.execute(inputCode);
+                int y = (int) computer.execute(inputCode);
+                Tile tile = Tile.values()[(int) computer.execute(inputCode)];
+
+                map.put(new Point(x, y), tile);
+            }
+        } catch (NoOpCodeException | NoModeException err) {
+            System.out.println(err.getMessage());
+            System.exit(1);
+        }
+
+        return map;
     }
 
     private static List<Long> readNumbers(String line) {
