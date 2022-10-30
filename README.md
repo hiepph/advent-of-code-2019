@@ -43,7 +43,53 @@ The answer is the least common multiple (LCM) of three cycles.
 
 # Day 13
 
-+ Visualisation to understand part 2:  [reddit](https://www.reddit.com/r/adventofcode/comments/ea6htk/2019_d13_part_2_cl_xrender_solve/)
+Visualisation to understand part 2:  [reddit](https://www.reddit.com/r/adventofcode/comments/ea6htk/2019_d13_part_2_cl_xrender_solve/)
 
-+ Refactor the code to have 2 streams of inputs and outputs.
-+ Instead of external control -> internal control when run `execute()`.
+I have to refactor the `IntCodeComputer` class again in this challenge. 
+
+1. Add an input queue of input code:
+
+```java 
+// old
+public long execute(int inputCode) { }
+
+// new
+private Queue<Integer> inputs;
+
+public void addInput(int inputCode) {
+    inputs.add(inputCode);
+}
+
+public void execute() { }
+```
+
+It makes more sense since we don't need `inputCode` for each execution.
+`execute()` now will run continuously until it halts or runs out of input stream.
+
+
+2. Add an output queue of diagnostic code:
+ 
+```java
+// old
+public long execute(int inputCode) { }
+    
+// new    
+private Queue<Integer> outputs;
+
+public Queue<Integer> getOutputs() {
+    return outputs;
+}
+```
+
+In this way, instead of external polling for each output, I can gather all output at once. 
+
+```java 
+// old
+int x = (int) computer.execute(inputCode);
+
+// new
+while (!outputs.isEmpty()) {
+    int x = outputs.remove();
+    // ...
+}
+```
