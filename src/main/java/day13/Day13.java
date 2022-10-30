@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class Day13 {
     public static void main(String[] args) throws IOException {
         System.out.println(part1("src/main/resources/inputs/13.txt"));
-//        System.out.println(part2("src/main/resources/inputs/13.txt"));
+        System.out.println(part2("src/main/resources/inputs/13.txt"));
     }
 
     /*
@@ -27,7 +27,6 @@ public class Day13 {
         } catch (NoOpCodeException | NoModeException err) {
             System.err.println(err.getMessage());
             System.exit(1);
-            return -1;
         }
 
         Map<Point, Tile> map = new HashMap<>();
@@ -48,51 +47,55 @@ public class Day13 {
     }
 
     // Returns the  score after beating all blocks.
-//    private static int part2(String inputFilename) throws IOException {
-//        List<String> lines = Files.readAllLines(
-//                Paths.get(inputFilename)
-//        );
-//        List<Integer> instructions = readNumbers(lines.get(0));
-//
-//        int inputCode = 0;
-//        IntCodeComputer computer = new IntCodeComputer(instructions, inputCode);
-//        computer.setMemoryDirectly(0, 2);
-//
-//        Point ball = null, paddle = null;
-//        Map<Point, Tile> map = new HashMap<>();
-//
-//        try {
-//            while (!computer.isHalted()) {
-//                computer.execute();
-//
-//                // stream of output (queue)
-//                Queue<Integer> outputs = computer.getOutputs();
-//                while (!outputs.isEmpty()) {
-//                    int x = outputs.remove();
-//                    int y = outputs.remove();
-//                    Tile tile = Tile.values()[outputs.remove()]];
-//
-//                    if (tile != Tile.Empty)
-//                        map.put(new Point(x, y), tile);
-//
-//                    if (tile == Tile.Ball)  ball = new Point(x, y);
-//                    if (tile == Tile.Paddle) paddle = new Point(x, y);
-//                }
-//
-//                // stream of input (queue)
-//                // update input code from the joystick depends on the positions of the ball and the paddle.
-//                if (ball.x() < paddle.x()) inputCode = -1; // move left
-//                else if (ball.x() > paddle.x()) inputCode = 1; // move right
-//                else inputCode = 0;
-//                computer.addInput(inputCode);
-//            }
-//        } catch (NoOpCodeException | NoModeException err) {
-//            System.out.println(err.getMessage());
-//            System.exit(1);
-//        }
-//
-//        return 0;
-//    }
+    private static int part2(String inputFilename) throws IOException {
+        List<String> lines = Files.readAllLines(
+                Paths.get(inputFilename)
+        );
+        List<Integer> instructions = readNumbers(lines.get(0));
+
+        IntCodeComputer computer = new IntCodeComputer(instructions);
+        computer.setMemoryDirectly(0, 2);
+
+        Point ball = null, paddle = null;
+        Map<Point, Tile> map = new HashMap<>();
+        int score = -1;
+
+        try {
+            while (!computer.isHalted()) {
+                computer.execute();
+
+                Queue<Integer> outputs = computer.getOutputs();
+                while (!outputs.isEmpty()) {
+                    int x = outputs.remove();
+                    int y = outputs.remove();
+                    if (x == -1 && y == 0) {
+                        score = outputs.remove();
+                        continue;
+                    }
+
+                    Tile tile = Tile.values()[outputs.remove()];
+
+                    if (tile != Tile.Empty)
+                        map.put(new Point(x, y), tile);
+
+                    if (tile == Tile.Ball)  ball = new Point(x, y);
+                    if (tile == Tile.Paddle) paddle = new Point(x, y);
+                }
+
+                // add input code depends on the positions of the ball and the paddle.
+                int inputCode;
+                if (ball.x() < paddle.x()) inputCode = -1; // move left
+                else if (ball.x() > paddle.x()) inputCode = 1; // move right
+                else inputCode = 0;
+                computer.addInput(inputCode);
+            }
+        } catch (NoOpCodeException | NoModeException err) {
+            System.err.println(err.getMessage());
+            System.exit(1);
+        }
+
+        return score;
+    }
 
     private static List<Integer> readNumbers(String line) {
         List<Integer> inputs = new ArrayList<>();
@@ -260,6 +263,10 @@ class IntCodeComputer {
 
     public Queue<Integer> getOutputs() {
         return outputs;
+    }
+
+    public void addInput(int inputCode) {
+        inputs.add(inputCode);
     }
 
     public boolean isHalted() {
