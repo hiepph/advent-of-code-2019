@@ -40,3 +40,10 @@ The answer is the least common multiple (LCM) of three cycles.
 
 + Reference:
   + https://0xdf.gitlab.io/adventofcode2019/12
+
+# Day 13
+
++ Visualisation to understand part 2:  [reddit](https://www.reddit.com/r/adventofcode/comments/ea6htk/2019_d13_part_2_cl_xrender_solve/)
+
++ Refactor the code to have 2 streams of inputs and outputs.
++ Instead of external control -> internal control when run `execute()`.

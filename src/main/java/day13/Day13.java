@@ -9,30 +9,36 @@ import java.util.stream.Collectors;
 public class Day13 {
     public static void main(String[] args) throws IOException {
         System.out.println(part1("src/main/resources/inputs/13.txt"));
-        System.out.println(part2("src/main/resources/inputs/13.txt"));
+//        System.out.println(part2("src/main/resources/inputs/13.txt"));
     }
 
-    // Returns the number of block tiles on the screen
-    private static long part1(String inputFilename) throws IOException {
+    /*
+     * Returns the number of block tiles on the screen
+     */
+    public static int part1(String inputFilename) throws IOException {
         List<String> lines = Files.readAllLines(
                 Paths.get(inputFilename)
         );
-        List<Long> inputs = readNumbers(lines.get(0));
+        List<Integer> instructions = readNumbers(lines.get(0));
+
+        IntCodeComputer computer = new IntCodeComputer(instructions);
+        try {
+            computer.execute();
+        } catch (NoOpCodeException | NoModeException err) {
+            System.err.println(err.getMessage());
+            System.exit(1);
+            return -1;
+        }
 
         Map<Point, Tile> map = new HashMap<>();
+        Queue<Integer> outputs = computer.getOutputs();
+        while (!outputs.isEmpty()) {
+            int x = outputs.remove();
+            int y = outputs.remove();
+            Tile tile = Tile.values()[outputs.remove()];
 
-        int inputCode = 0;
-        IntCodeComputer computer = new IntCodeComputer(inputs);
-        try {
-            while (!computer.isHalted()) {
-                int x = (int) computer.execute(inputCode);
-                int y = (int) computer.execute(inputCode);
-                Tile tile = Tile.values()[(int) computer.execute(inputCode)];
-
+            if (tile != Tile.Empty)
                 map.put(new Point(x, y), tile);
-            }
-        } catch (NoOpCodeException | NoModeException err) {
-            System.out.println(err.getMessage());
         }
 
         return map.keySet().stream()
@@ -42,50 +48,57 @@ public class Day13 {
     }
 
     // Returns the  score after beating all blocks.
-    private static long part2(String inputFilename) throws IOException {
-        List<String> lines = Files.readAllLines(
-                Paths.get(inputFilename)
-        );
-        List<Long> data = readNumbers(lines.get(0));
+//    private static int part2(String inputFilename) throws IOException {
+//        List<String> lines = Files.readAllLines(
+//                Paths.get(inputFilename)
+//        );
+//        List<Integer> instructions = readNumbers(lines.get(0));
+//
+//        int inputCode = 0;
+//        IntCodeComputer computer = new IntCodeComputer(instructions, inputCode);
+//        computer.setMemoryDirectly(0, 2);
+//
+//        Point ball = null, paddle = null;
+//        Map<Point, Tile> map = new HashMap<>();
+//
+//        try {
+//            while (!computer.isHalted()) {
+//                computer.execute();
+//
+//                // stream of output (queue)
+//                Queue<Integer> outputs = computer.getOutputs();
+//                while (!outputs.isEmpty()) {
+//                    int x = outputs.remove();
+//                    int y = outputs.remove();
+//                    Tile tile = Tile.values()[outputs.remove()]];
+//
+//                    if (tile != Tile.Empty)
+//                        map.put(new Point(x, y), tile);
+//
+//                    if (tile == Tile.Ball)  ball = new Point(x, y);
+//                    if (tile == Tile.Paddle) paddle = new Point(x, y);
+//                }
+//
+//                // stream of input (queue)
+//                // update input code from the joystick depends on the positions of the ball and the paddle.
+//                if (ball.x() < paddle.x()) inputCode = -1; // move left
+//                else if (ball.x() > paddle.x()) inputCode = 1; // move right
+//                else inputCode = 0;
+//                computer.addInput(inputCode);
+//            }
+//        } catch (NoOpCodeException | NoModeException err) {
+//            System.out.println(err.getMessage());
+//            System.exit(1);
+//        }
+//
+//        return 0;
+//    }
 
-        IntCodeComputer computer = new IntCodeComputer(data);
-        var map = makeMap(data, computer);
-
-        // play
-        // set memory address
-        // set stream of joystick input (by comparing the ball position to the next block position)
-        // recompute each time input is set
-        // refer: https://github.com/berkgulmus/AdventOfCode2019/blob/master/Day13.2.py
-        // refer: https://www.reddit.com/r/adventofcode/comments/e9zgse/2019_day_13_solutions/
-
-        return 0;
-    }
-
-    public static Map<Point, Tile> makeMap(List<Long> data, IntCodeComputer computer) {
-        Map<Point, Tile> map = new HashMap<>();
-
-        int inputCode = 0;
-        try {
-            while (!computer.isHalted()) {
-                int x = (int) computer.execute(inputCode);
-                int y = (int) computer.execute(inputCode);
-                Tile tile = Tile.values()[(int) computer.execute(inputCode)];
-
-                map.put(new Point(x, y), tile);
-            }
-        } catch (NoOpCodeException | NoModeException err) {
-            System.out.println(err.getMessage());
-            System.exit(1);
-        }
-
-        return map;
-    }
-
-    private static List<Long> readNumbers(String line) {
-        List<Long> inputs = new ArrayList<>();
+    private static List<Integer> readNumbers(String line) {
+        List<Integer> inputs = new ArrayList<>();
 
         for (String numString : line.split(",")) {
-            inputs.add(Long.parseLong(numString));
+            inputs.add(Integer.parseInt(numString));
         }
 
         return inputs;
@@ -95,87 +108,107 @@ public class Day13 {
 enum Tile { Empty, Wall, Block, Paddle, Ball };
 
 class IntCodeComputer {
-    private final List<Long> memory;
-    private long instructionPointer;
-    private String instr;
-    private long diagnosticCode;
-    private long relativeBase;
+    private final List<Integer> memory;
+    private int instructionPointer;
+    private int diagnosticCode;
+    private int relativeBase;
+    // queue of input code
+    private Queue<Integer> inputs;
+    // queue of diagnostic code
+    private Queue<Integer> outputs;
     private boolean isHalted;
 
-    public IntCodeComputer(List<Long> inputs) {
-        this.memory = new ArrayList<>(Collections.nCopies(9999, 0L));
-        for (int i = 0; i < inputs.size(); i++) {
-            this.memory.set(i, inputs.get(i));
+    public IntCodeComputer(List<Integer> instructions) {
+        this.memory = new ArrayList<>(Collections.nCopies(9999, 0));
+        for (int i = 0; i < instructions.size(); i++) {
+            this.memory.set(i, instructions.get(i));
         }
 
         this.diagnosticCode = 0;
         this.instructionPointer = 0;
         this.relativeBase = 0;
+
+        this.inputs = new ArrayDeque<>();
+        this.outputs = new ArrayDeque<>();
+
         this.isHalted = false;
     }
 
     /*
-     * Instruction has the form: ABCDE, in which:
-     *   + DE: 2-digit opcode
-     *   + C: mode of first parameter
-     *   + B: mode of second parameter
-     *   + A: mode of third parameter
-     *
-     * ref:
-     *   + https://adventofcode.com/2019/day/2
-     *   + https://adventofcode.com/2019/day/5
+     * Execute continuously until it needs an input.
      */
-    public long execute(int inputCode) throws NoOpCodeException, NoModeException {
-        // poll mode: runs continuously until outputs a diagnostic code
-        while (true) {
-            instr = String.format("%05d", getMemory(instructionPointer));
-            int opCode = (int) Long.parseLong(instr.substring(3));
+    public void execute() throws NoOpCodeException, NoModeException {
+        boolean isPolling = false;
+        while (!isHalted && !isPolling) {
+            //
+            //  Instruction has the form: ABCDE in which,
+            //    + DE: 2-digit opcode
+            //    + C: mode of first parameter
+            //    + B: mode of second parameter
+            //    + A: mode of third parameter
+            //
+            String literalInstruction = String.format("%05d", getMemory(instructionPointer));
+            int opCode = Integer.parseInt(literalInstruction.substring(3));
+            String parameters = literalInstruction.substring(0, 3);
+
             switch (opCode) {
                 case 1:
-                    setMemory(3, getParameter(1) + getParameter(2));
+                    setMemory(parameters, 3,
+                            getParameter(parameters, 1) + getParameter(parameters, 2));
                     instructionPointer += 4;
                     break;
                 case 2:
-                    setMemory(3, getParameter(1) * getParameter(2));
+                    setMemory(parameters, 3,
+                            getParameter(parameters, 1) * getParameter(parameters, 2));
                     instructionPointer += 4;
                     break;
                 case 3:
-                    setMemory(1, inputCode);
+                    if (inputs.isEmpty()) {
+                        isPolling = true;
+                        break;
+                    }
+
+                    // consume one input
+                    setMemory(parameters, 1,
+                            inputs.remove());
                     instructionPointer += 2;
                     break;
                 case 4:
-                    diagnosticCode = getParameter(1);
+                    diagnosticCode = getParameter(parameters, 1);
                     instructionPointer += 2;
-                    return diagnosticCode;
+                    outputs.add(diagnosticCode);
+                    break;
                 case 5:
-                    if (getParameter(1) != 0) {
-                        instructionPointer = getParameter(2);
+                    if (getParameter(parameters, 1) != 0) {
+                        instructionPointer = getParameter(parameters, 2);
                     } else {
                         instructionPointer += 3;
                     }
                     break;
                 case 6:
-                    if (getParameter(1) == 0) {
-                        instructionPointer = getParameter(2);
+                    if (getParameter(parameters, 1) == 0) {
+                        instructionPointer = getParameter(parameters, 2);
                     } else {
                         instructionPointer += 3;
                     }
                     break;
                 case 7:
-                    setMemory(3, getParameter(1) < getParameter(2) ? 1 : 0);
+                    setMemory(parameters, 3,
+                            getParameter(parameters, 1) < getParameter(parameters, 2) ? 1 : 0);
                     instructionPointer += 4;
                     break;
                 case 8:
-                    setMemory(3, getParameter(1) == getParameter(2) ? 1 : 0);
+                    setMemory(parameters, 3,
+                            getParameter(parameters, 1) == getParameter(parameters, 2) ? 1 : 0);
                     instructionPointer += 4;
                     break;
                 case 9:
-                    relativeBase += getParameter(1);
+                    relativeBase += getParameter(parameters, 1);
                     instructionPointer += 2;
                     break;
                 case 99:
                     isHalted = true;
-                    return 0;
+                    break;
                 default:
                     throw new NoOpCodeException(opCode);
             }
@@ -184,16 +217,16 @@ class IntCodeComputer {
 
 
     /*
-     * Types of mode:
-     *   + 0: position mode
-     *   + 1: immediate mode
-     *   + 2: relative mode
+     * @param ordinal: the nth parameters.
      */
-    private long getParameter(int ordinal) throws NoModeException {
-        char mode = instr.charAt(3 - ordinal);
+    private int getParameter(String parameters, int ordinal) throws NoModeException {
+        char mode = parameters.charAt(3 - ordinal);
         return switch (mode) {
+            // position mode
             case '0' -> getMemory(getMemory(instructionPointer + ordinal));
+            // immediate mode
             case '1' -> getMemory(instructionPointer + ordinal);
+            // relative mode
             case '2' -> getMemory(relativeBase + getMemory(instructionPointer + ordinal));
             default -> throw new NoModeException(mode);
         };
@@ -202,24 +235,31 @@ class IntCodeComputer {
     /*
      * Invalid to try to access the memory at a negative address.
      */
-    private long getMemory(long address) {
-        return memory.get((int) address);
+    private int getMemory(int address) {
+        return memory.get(address);
     }
 
     /*
-     * Parameters that an instruction writes to will *never be in immediate mode*
+     * @param ordinal: the nth parameters.
      */
-    private void setMemory(int ordinal, long value) throws NoModeException {
-        char mode = instr.charAt(3 - ordinal);
+    private void setMemory(String parameters, int ordinal, int value) throws NoModeException {
+        char mode = parameters.charAt(3 - ordinal);
         switch (mode) {
-            case '0', '1' -> memory.set((int) getMemory(instructionPointer + ordinal), value);
-            case '2' -> memory.set((int) (relativeBase + getMemory(instructionPointer + ordinal)), value);
+            // position mode
+            // Parameters that an instruction writes to will *never be in immediate mode*.
+            case '0', '1' -> memory.set(getMemory(instructionPointer + ordinal), value);
+            // relative mode
+            case '2' -> memory.set(relativeBase + getMemory(instructionPointer + ordinal), value);
             default -> throw new NoModeException(mode);
         }
     }
 
-    public long getDiagnosticCode() {
-        return diagnosticCode;
+    public void setMemoryDirectly(int index, int value) {
+        memory.set(index, value);
+    }
+
+    public Queue<Integer> getOutputs() {
+        return outputs;
     }
 
     public boolean isHalted() {
