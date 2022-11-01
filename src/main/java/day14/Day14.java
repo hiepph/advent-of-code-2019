@@ -2,28 +2,22 @@ package day14;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Day14 {
+    public static void main(String[] args) {
+        System.out.println(part1("src/main/resources/inputs/14.txt"));
+    }
+
     // Returns the minimum number of OREs needed.
     public static long part1(String inputFilename) {
-        Map<Chemical, Chemical> oresRequirement = getOresRequirement(inputFilename);
-        TreeNode rootNode = makeTree(inputFilename);
-
-        return countOres(rootNode, oresRequirement);
+        return countOres(getReactions(inputFilename));
     }
 
-    /*
-     * Make a binary tree from the input.
-     * Modify the map of ore requirements.
-     */
-    public static Map<Chemical, Chemical> getOresRequirement(String inputFilename) {
-        Map<Chemical, Chemical> oresRequirement = new HashMap<>();
+    public static Map<String, Reaction> getReactions(String inputFilename) {
+        Map<String, Reaction> reactions = new HashMap<>();
 
         Scanner sc = null;
         try {
@@ -35,63 +29,72 @@ public class Day14 {
 
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
-            if (line.contains("ORE")) {
-                // e.g. 10 ORE => 10 A
-                Pattern p = Pattern.compile("(\\d+) ORE => (\\d+) (\\w+)");
-                Matcher m = p.matcher(line);
-                m.find();
 
-                oresRequirement.put(
-                        new Chemical(m.group(3), Integer.parseInt(m.group(2))),
-                        new Chemical("ORE", Integer.parseInt(m.group(1)))
-                );
+            //
+            // Example cases:
+            //
+            // 10 ORE => 10 A
+            // 5 MNCFX, 7 RFSQX, 2 FWMGM, 2 VPVL, 19 CXFTF => 3 HVMC
+            // 7 A, 1 E => 1 FUEL
+            //
+            Pattern p = Pattern.compile("(\\d+) (\\w+)");
+            Matcher m = p.matcher(line);
+
+            Deque<Chemical> chemicals = new ArrayDeque<>();
+            while (m.find()) {
+                chemicals.add(new Chemical(m.group(2), Integer.parseInt(m.group(1))));
             }
+
+            Chemical product = chemicals.removeLast();
+            reactions.put(
+                    product.name(),
+                    new Reaction(product, new ArrayList<>(chemicals))
+            );
         }
 
-        return oresRequirement;
+        return reactions;
     }
 
-    public static TreeNode makeTree(String inputFilename) {
-        TreeNode rootNode = null;
+    public static long countOres(Map<String, Reaction> reactions) {
+        Map<String, Integer> wastes = new HashMap<>();
+        Queue<Chemical> needs = new ArrayDeque<>();
+        needs.add(new Chemical("FUEL", 1));
 
-        Scanner sc = null;
-        try {
-            sc = new Scanner(Paths.get(inputFilename));
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
+        long numOres = 0;
+
+        while (!needs.isEmpty()) {
+            Chemical need = needs.remove();
+
+            Chemical product = reactions.get(need.name()).product();
+            List<Chemical> reactants = reactions.get(need.name()).reactants();
+
+            for (Chemical reactant : reactants) {
+                // calculate the minimum necessary reactants
+                int minimumQuantity = (int) Math.ceil(reactant.quantity() / product.quantity()) * product.quantity();
+                if (reactant.name().equals("ORE")) {
+                    numOres += minimumQuantity;
+                } else {
+                    int existedQuantity = wastes.getOrDefault(reactant.name(), 0);
+
+                    if (minimumQuantity <= existedQuantity) {
+                        // abundant
+                        wastes.put(reactant.name(), existedQuantity - minimumQuantity);
+                    } else {
+                        // need to make some reactions
+                        minimumQuantity -= existedQuantity;
+                        needs.add(new Chemical(reactant.name(), minimumQuantity));
+                    }
+                }
+
+                // reaction will produce some waste product
+                int wastedQuantity = minimumQuantity / reactant.quantity() * product.quantity() - need.quantity();
+                wastes.put(need.name(), wastedQuantity);
+            };
         }
 
-        while (sc.hasNextLine()) {
-            String line = sc.nextLine();
-            if (!line.contains("ORE")) {
-
-            }
-        }
-
-        return rootNode;
-    }
-
-    /*
-     * Given a root tree node, count the ores needed to make the leaves.
-     */
-    public static long countOres(TreeNode rootNode, Map<Chemical, Chemical> oresRequirement) {
-        return 0;
+        return numOres;
     }
 }
 
 record Chemical(String name, int quantity) { }
-
-class TreeNode {
-    private List<TreeNode> children;
-    private Chemical val;
-
-    public TreeNode(Chemical val) {
-        this.val = val;
-    }
-
-    public Chemical getVal() {
-        return val;
-    }
-
-}
+record Reaction(Chemical product, List<Chemical> reactants) { }
