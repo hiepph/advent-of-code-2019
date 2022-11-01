@@ -56,47 +56,38 @@ public class Day14 {
     }
 
     public static int countOres(Map<String, Reaction> reactions) {
-        Map<String, Integer> wastes = new HashMap<>();
-        Queue<Chemical> needs = new ArrayDeque<>();
-        needs.add(new Chemical("FUEL", 1));
+        Map<String, Integer> exists = new HashMap<>();
+        Map<String, Integer> needs = new HashMap<>();
+        needs.put("FUEL", 1);
 
         int numOres = 0;
-
         while (!needs.isEmpty()) {
-            Chemical need = needs.remove();
+            String need = needs.keySet().stream().findFirst().get();
+            int needQuantity = needs.get(need);
+            needs.remove(need);
 
-            Chemical product = reactions.get(need.name()).product();
-            List<Chemical> reactants = reactions.get(need.name()).reactants();
+            int existedQuantity = exists.getOrDefault(need, 0);
+            if (needQuantity <= existedQuantity)  {
+                // abundant
+                exists.put(need, existedQuantity - needQuantity);
+                continue;
+            }
 
-            for (Chemical reactant : reactants) {
-                // calculate the minimum necessary reactants
-                int needQuantity = need.quantity();
-                int existedQuantity = wastes.getOrDefault(need.name(), 0);
-                if (needQuantity <= existedQuantity) {
-                    // abundant
-                    wastes.put(need.name(), existedQuantity - needQuantity);
-                    continue;
-                }
+            needQuantity -= existedQuantity;
+            exists.remove(need);
 
-                needQuantity -= existedQuantity;
-                wastes.remove(need.name());
+            int productQuantity = reactions.get(need).product().quantity();
+            int numReactions = (int) Math.ceil(needQuantity * 1.0 / productQuantity);
 
-                int requiredReactantQuantity = (int) Math.ceil(needQuantity * 1.0 / product.quantity())
-                        * reactant.quantity();
-
+            exists.put(need, exists.getOrDefault(need, 0) + numReactions * productQuantity - needQuantity);
+            for (Chemical reactant : reactions.get(need).reactants()) {
                 if (reactant.name().equals("ORE")) {
-                    numOres += requiredReactantQuantity;
-                }  else {
-                    // need to make some reactions
-                    needs.add(new Chemical(reactant.name(), requiredReactantQuantity));
+                    numOres += reactant.quantity() * numReactions;
+                } else {
+                    needs.put(reactant.name(),
+                            needs.getOrDefault(reactant.name(), 0) + reactant.quantity() * numReactions);
                 }
-
-                // reaction might produce wasted product
-                int wastedQuantity = requiredReactantQuantity / reactant.quantity() * product.quantity()
-                        - needQuantity;
-                wastes.put(need.name(), wastedQuantity);
-
-            };
+            }
         }
 
         return numOres;
