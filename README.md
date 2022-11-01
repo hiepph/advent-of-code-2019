@@ -96,3 +96,20 @@ while (!outputs.isEmpty()) {
 
 
 # Day 14
+
++ Part 1: Have 2 dictionaries of `needs` and `exists` and continually update values from them, starting from `("FUEL", 1)`.
+
+```java
+Map<String, Integer> exists = new HashMap<>();
+Map<String, Integer> needs = new HashMap<>();
+needs.put("FUEL", 1);
+```
+
+The buggy parts I encountered is to update the value of those dictionaries:
+
+```java
+exists.put(need, exists.getOrDefault(need, 0) + numReactions * productQuantity - needQuantity);
+needs.put(reactant.name(),needs.getOrDefault(reactant.name(), 0) + reactant.quantity() * numReactions);
+```
+
++ [Reference](https://0xdf.gitlab.io/adventofcode2019/14)
