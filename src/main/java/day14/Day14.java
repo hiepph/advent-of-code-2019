@@ -12,7 +12,7 @@ public class Day14 {
     }
 
     // Returns the minimum number of OREs needed.
-    public static long part1(String inputFilename) {
+    public static int part1(String inputFilename) {
         return countOres(getReactions(inputFilename));
     }
 
@@ -55,12 +55,12 @@ public class Day14 {
         return reactions;
     }
 
-    public static long countOres(Map<String, Reaction> reactions) {
+    public static int countOres(Map<String, Reaction> reactions) {
         Map<String, Integer> wastes = new HashMap<>();
         Queue<Chemical> needs = new ArrayDeque<>();
         needs.add(new Chemical("FUEL", 1));
 
-        long numOres = 0;
+        int numOres = 0;
 
         while (!needs.isEmpty()) {
             Chemical need = needs.remove();
@@ -70,25 +70,32 @@ public class Day14 {
 
             for (Chemical reactant : reactants) {
                 // calculate the minimum necessary reactants
-                int minimumQuantity = (int) Math.ceil(reactant.quantity() / product.quantity()) * product.quantity();
-                if (reactant.name().equals("ORE")) {
-                    numOres += minimumQuantity;
-                } else {
-                    int existedQuantity = wastes.getOrDefault(reactant.name(), 0);
-
-                    if (minimumQuantity <= existedQuantity) {
-                        // abundant
-                        wastes.put(reactant.name(), existedQuantity - minimumQuantity);
-                    } else {
-                        // need to make some reactions
-                        minimumQuantity -= existedQuantity;
-                        needs.add(new Chemical(reactant.name(), minimumQuantity));
-                    }
+                int needQuantity = need.quantity();
+                int existedQuantity = wastes.getOrDefault(need.name(), 0);
+                if (needQuantity <= existedQuantity) {
+                    // abundant
+                    wastes.put(need.name(), existedQuantity - needQuantity);
+                    continue;
                 }
 
-                // reaction will produce some waste product
-                int wastedQuantity = minimumQuantity / reactant.quantity() * product.quantity() - need.quantity();
+                needQuantity -= existedQuantity;
+                wastes.remove(need.name());
+
+                int requiredReactantQuantity = (int) Math.ceil(needQuantity * 1.0 / product.quantity())
+                        * reactant.quantity();
+
+                if (reactant.name().equals("ORE")) {
+                    numOres += requiredReactantQuantity;
+                }  else {
+                    // need to make some reactions
+                    needs.add(new Chemical(reactant.name(), requiredReactantQuantity));
+                }
+
+                // reaction might produce wasted product
+                int wastedQuantity = requiredReactantQuantity / reactant.quantity() * product.quantity()
+                        - needQuantity;
                 wastes.put(need.name(), wastedQuantity);
+
             };
         }
 
