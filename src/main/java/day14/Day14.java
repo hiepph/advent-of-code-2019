@@ -9,11 +9,43 @@ import java.util.regex.Pattern;
 public class Day14 {
     public static void main(String[] args) {
         System.out.println(part1("src/main/resources/inputs/14.txt"));
+        System.out.println(part2("src/main/resources/inputs/14.txt"));
     }
 
     // Returns the minimum number of OREs needed.
-    public static int part1(String inputFilename) {
-        return countOres(getReactions(inputFilename));
+    public static long part1(String inputFilename) {
+        var reactions = getReactions(inputFilename);
+        return countRequiredOres(reactions, 1);
+    }
+
+    // Returns the maximum amount of FUEL you can produce given 10^12 ores.
+    // Approach: Binary search for a possible range of number of fuel.
+    public static long part2(String inputFilename) {
+        var reactions = getReactions(inputFilename);
+        long numProvidedOres = (long) 1e12;
+
+        long low =  numProvidedOres / countRequiredOres(reactions, 1);
+        long high = low * 10;
+
+        while (countRequiredOres(reactions, high) < numProvidedOres) {
+            low = high;
+            high *= 10;
+        }
+
+        long mid = 0;
+        long numRequiredOres = 0;
+        while (low < high) {
+            mid = (low + high) / 2;
+            numRequiredOres = countRequiredOres(reactions, mid);
+            if (numRequiredOres < numProvidedOres)
+                low = mid;
+            else if (numRequiredOres > numProvidedOres)
+                high = mid - 1;
+            else
+                break;
+        }
+
+        return mid - 1;
     }
 
     public static Map<String, Reaction> getReactions(String inputFilename) {
@@ -42,7 +74,7 @@ public class Day14 {
 
             Deque<Chemical> chemicals = new ArrayDeque<>();
             while (m.find()) {
-                chemicals.add(new Chemical(m.group(2), Integer.parseInt(m.group(1))));
+                chemicals.add(new Chemical(m.group(2), Long.parseLong(m.group(1))));
             }
 
             Chemical product = chemicals.removeLast();
@@ -55,18 +87,18 @@ public class Day14 {
         return reactions;
     }
 
-    public static int countOres(Map<String, Reaction> reactions) {
-        Map<String, Integer> exists = new HashMap<>();
-        Map<String, Integer> needs = new HashMap<>();
-        needs.put("FUEL", 1);
+    public static long countRequiredOres(Map<String, Reaction> reactions, long numFuel) {
+        Map<String, Long> exists = new HashMap<>();
+        Map<String, Long> needs = new HashMap<>();
+        needs.put("FUEL", numFuel);
 
-        int numOres = 0;
+        long numOres = 0;
         while (!needs.isEmpty()) {
             String need = needs.keySet().stream().findFirst().get();
-            int needQuantity = needs.get(need);
+            long needQuantity = needs.get(need);
             needs.remove(need);
 
-            int existedQuantity = exists.getOrDefault(need, 0);
+            long existedQuantity = exists.getOrDefault(need, 0L);
             if (needQuantity <= existedQuantity)  {
                 // abundant
                 exists.put(need, existedQuantity - needQuantity);
@@ -76,16 +108,16 @@ public class Day14 {
             needQuantity -= existedQuantity;
             exists.remove(need);
 
-            int productQuantity = reactions.get(need).product().quantity();
-            int numReactions = (int) Math.ceil(needQuantity * 1.0 / productQuantity);
+            long productQuantity = reactions.get(need).product().quantity();
+            long numReactions = (long) Math.ceil(needQuantity * 1.0 / productQuantity);
 
-            exists.put(need, exists.getOrDefault(need, 0) + numReactions * productQuantity - needQuantity);
+            exists.put(need, exists.getOrDefault(need, 0L) + numReactions * productQuantity - needQuantity);
             for (Chemical reactant : reactions.get(need).reactants()) {
                 if (reactant.name().equals("ORE")) {
                     numOres += reactant.quantity() * numReactions;
                 } else {
                     needs.put(reactant.name(),
-                            needs.getOrDefault(reactant.name(), 0) + reactant.quantity() * numReactions);
+                            needs.getOrDefault(reactant.name(), 0L) + reactant.quantity() * numReactions);
                 }
             }
         }
@@ -94,5 +126,5 @@ public class Day14 {
     }
 }
 
-record Chemical(String name, int quantity) { }
+record Chemical(String name, long quantity) { }
 record Reaction(Chemical product, List<Chemical> reactants) { }

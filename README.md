@@ -1,4 +1,4 @@
-# Advent of Code 2019  (*TBD*)
+# Advent of Code 2019 
 
 This year is entertaining since I get to build a [computer](https://adventofcode.com/2019/day/9) that interprets integer codes.
 Kudos to the people who involved to make it educational.
